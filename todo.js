@@ -12,7 +12,8 @@ import {
 export default function todoScreen() {
   const [tasks, settasks] = useState([]);
   const [text, settext] = useState("");
-  const [editingId] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [editingText, setEditingText] = useState("");
 
   function addTask() {
     if (text.trim() === "") {
@@ -29,17 +30,44 @@ export default function todoScreen() {
   }
 
   function renderTask({ item }) {
+    if (editingId === item.id) {
+      return (
+        <View style={styles.taskItem}>
+          <TextInput
+            value={editingText}
+            onChangeText={setEditingText}
+            style={styles.editInput}
+          />
+          <Pressable style={styles.saveBtn} onPress={() => saveEdit(item.id)}>
+            <Text style={styles.btnText}>Save</Text>
+          </Pressable>
+          <Pressable style={styles.cancelBtn} onPress={cancelEdit}>
+            <Text style={styles.btnText}>Cancel</Text>
+          </Pressable>
+        </View>
+      );
+    }
     return (
       <View style={styles.taskItem}>
         <Pressable onPress={() => toggleTask(item.id)}>
-          <Text>{item.completed ? "✓" : "☐"}</Text>
+          <Text style={styles.checkbox}>{item.completed ? "✓" : "☐"}</Text>
         </Pressable>
-        <Text style={item.completed ? styles.completedText : null}>
+        <Text style={[styles.taskText, item.completed && styles.completedText]}>
           {item.text}
         </Text>
+        <Pressable
+          style={styles.editBtn}
+          onPress={() => startEdit(item.id, item.text)}
+        >
+          <Text style={styles.btnText}>Edit</Text>
+        </Pressable>
+        <Pressable style={styles.deleteBtn} onPress={() => deleteTask(item.id)}>
+          <Text style={styles.btnText}>Delete</Text>
+        </Pressable>
       </View>
     );
   }
+
   function toggleTask(id) {
     settasks(
       tasks.map((task) =>
@@ -47,20 +75,42 @@ export default function todoScreen() {
       ),
     );
   }
+  function startEdit(id, currentText) {
+    setEditingId(id);
+    setEditingText(currentText);
+  }
+  function saveEdit(id) {
+    settasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, text: editingText } : task,
+      ),
+    );
+    setEditingId(null);
+    setEditingText("");
+  }
+  function cancelEdit() {
+    setEditingId(null);
+    setEditingText("");
+  }
+  function deleteTask(id) {
+    settasks(tasks.filter((task) => task.id !== id));
+  }
 
   return (
     <View style={styles.container}>
-      <Text>My To-Do List</Text>
+      <Text style={styles.title}>My To-Do List</Text>
 
-      <TextInput
-        placeholder="add a task..."
-        value={text}
-        onChangeText={settext}
-      />
-
-      <Pressable onPress={addTask}>
-        <Text>Add Task</Text>
-      </Pressable>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Add a new task..."
+          value={text}
+          onChangeText={settext}
+        />
+        <Pressable style={styles.addBtn} onPress={addTask}>
+          <Text style={styles.addBtnText}>Add</Text>
+        </Pressable>
+      </View>
 
       <FlatList
         data={tasks}
@@ -77,20 +127,112 @@ export default function todoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#f5f5f5",
+    paddingTop: 100,
+    paddingHorizontal: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333",
+    textAlign: "center",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 20,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
     backgroundColor: "#fff",
-    paddingTop: 20,
+  },
+  addBtn: {
+    backgroundColor: "#4CAF50",
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  addBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
   listContainer: {
     flex: 1,
-    marginTop: 20,
   },
   taskItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    marginBottom: 10,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  checkbox: {
+    fontSize: 20,
+    marginRight: 12,
+  },
+  taskText: {
+    flex: 1,
+    fontSize: 16,
+    color: "#333",
   },
   completedText: {
     textDecorationLine: "line-through",
-    color: "#999",
+    color: "#aaa",
+  },
+  editBtn: {
+    backgroundColor: "#2196F3",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  deleteBtn: {
+    backgroundColor: "#f44336",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  btnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  editInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#2196F3",
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginRight: 10,
+    fontSize: 14,
+  },
+  saveBtn: {
+    backgroundColor: "#4CAF50",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  cancelBtn: {
+    backgroundColor: "#9E9E9E",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
   },
 });
