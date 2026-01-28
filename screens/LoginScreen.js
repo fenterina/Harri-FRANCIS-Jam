@@ -59,8 +59,7 @@ const styles = StyleSheet.create({
     borderColor: "#0a0404",
     padding: 10,
     marginBottom: 10,
-    alignSelf: "flex-start",
-    marginLeft: 20,
+    textAlign: "left",
   },
   button: {
     backgroundColor: "#0a0404",
