@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
+import { User } from "../types/types";
 import { useState } from "react";
+import { createAccount } from "../services/authServices";
 
 export default function RegisterScreen({ navigation }) {
   const [uname, setUname] = useState("");
@@ -7,6 +9,31 @@ export default function RegisterScreen({ navigation }) {
   const [pass, setPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
 
+  async function handleRegister() {
+    if (pass !== confirmPass) {
+      alert("Passwords do not match. Please try again.");
+      return;
+    }
+
+    let user: User = {
+      username: uname,
+      email: email,
+      password: pass,
+      isLoggedIn: false,
+    };
+    try {
+      const register = await createAccount(user);
+      if (register) {
+        alert(
+          `Account created successfully!\nData: ${JSON.stringify(register, null, 2)}`,
+        );
+        navigation.navigate("Login");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert("Failed to create account. Please try again.");
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Account</Text>
@@ -37,10 +64,7 @@ export default function RegisterScreen({ navigation }) {
         placeholder="Confirm Password"
         secureTextEntry
       />
-      <Pressable
-        style={styles.button}
-        onPress={() => navigation.navigate("Login")}
-      >
+      <Pressable style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </Pressable>
       <Pressable onPress={() => navigation.navigate("Login")}>

@@ -1,10 +1,21 @@
 import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
 import { useState } from "react";
+import { loginUser } from "../services/authServices";
 
 export default function LoginScreen({ navigation }) {
   const [uname, setUname] = useState("");
   const [pass, setPass] = useState("");
-
+  function handleLogin() {
+    try {
+      const login = loginUser(uname, pass);
+      console.log(login);
+      if (login) {
+        navigation.navigate("Home");
+      }
+    } catch (error) {
+      alert("Account Not Found!");
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Log In</Text>
@@ -30,10 +41,7 @@ export default function LoginScreen({ navigation }) {
         </Pressable>
       </View>
       <View>
-        <Pressable
-          style={styles.button}
-          onPress={() => navigation.navigate("Home")}
-        >
+        <Pressable style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Sign in</Text>
         </Pressable>
       </View>
