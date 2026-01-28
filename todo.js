@@ -9,7 +9,7 @@ import {
   FlatList,
 } from "react-native";
 
-export default function App() {
+export default function todoScreen() {
   const [tasks, settasks] = useState([]);
   const [text, settext] = useState("");
   const [editingId] = useState("");
@@ -31,8 +31,20 @@ export default function App() {
   function renderTask({ item }) {
     return (
       <View style={styles.taskItem}>
-        <Text>{item.text}</Text>
+        <Pressable onPress={() => toggleTask(item.id)}>
+          <Text>{item.completed ? "✓" : "☐"}</Text>
+        </Pressable>
+        <Text style={item.completed ? styles.completedText : null}>
+          {item.text}
+        </Text>
       </View>
+    );
+  }
+  function toggleTask(id) {
+    settasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task,
+      ),
     );
   }
 
@@ -76,5 +88,9 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
+  },
+  completedText: {
+    textDecorationLine: "line-through",
+    color: "#999",
   },
 });
