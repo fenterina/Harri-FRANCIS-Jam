@@ -5,9 +5,9 @@ import { loginUser } from "../services/authServices";
 export default function LoginScreen({ navigation }) {
   const [uname, setUname] = useState("");
   const [pass, setPass] = useState("");
-  function handleLogin() {
+  async function handleLogin() {
     try {
-      const login = loginUser(uname, pass);
+      const login = await loginUser(uname, pass);
       console.log(login);
       if (login) {
         navigation.navigate("Home");
