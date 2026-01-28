@@ -7,6 +7,7 @@ import {
   TextInput,
   Pressable,
   FlatList,
+  Alert,
 } from "react-native";
 
 export default function todoScreen() {
@@ -80,6 +81,10 @@ export default function todoScreen() {
     setEditingText(currentText);
   }
   function saveEdit(id) {
+    if (editingText.trim() === "") {
+      Alert.alert("Empty Task", "Please enter a task before saving");
+      return;
+    }
     settasks(
       tasks.map((task) =>
         task.id === id ? { ...task, text: editingText } : task,
@@ -127,7 +132,7 @@ export default function todoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#d6d2c6",
     paddingTop: 100,
     paddingHorizontal: 16,
   },
@@ -146,7 +151,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#0a0404",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -154,7 +159,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   addBtn: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#0a0404",
     paddingHorizontal: 20,
     borderRadius: 8,
     justifyContent: "center",
@@ -170,7 +175,7 @@ const styles = StyleSheet.create({
   },
   taskItem: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     backgroundColor: "#fff",
     padding: 15,
     marginBottom: 10,
@@ -184,18 +189,21 @@ const styles = StyleSheet.create({
   checkbox: {
     fontSize: 20,
     marginRight: 12,
+    marginTop: 2,
   },
   taskText: {
     flex: 1,
     fontSize: 16,
     color: "#333",
+    flexWrap: "wrap",
+    marginRight: 10,
   },
   completedText: {
     textDecorationLine: "line-through",
     color: "#aaa",
   },
   editBtn: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#0a0404",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 6,
@@ -215,7 +223,7 @@ const styles = StyleSheet.create({
   editInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#2196F3",
+    borderColor: "#0a0404",
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -223,7 +231,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   saveBtn: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#0a0404",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 6,
