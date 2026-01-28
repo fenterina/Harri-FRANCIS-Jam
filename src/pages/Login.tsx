@@ -1,20 +1,20 @@
-import React, { useState } from 'react'
-import { View, TextInput, Button, Alert } from 'react-native'
-import { loginUser } from '../services/authServices'
+import React, { useState } from "react";
+import { View, TextInput, Button, Alert } from "react-native";
+import { loginUser } from "../services/authServices";
 
 export default function Login() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
-      const user = await loginUser(username, password)
-      console.log('Logged in:', user)
-      Alert.alert('Success', 'Logged in!')
+      const user = await loginUser(username, password);
+      console.log("Logged in:", user);
+      Alert.alert("Success", "Logged in!");
     } catch (err) {
-      Alert.alert('Error', 'Login failed')
+      Alert.alert("Error", "Login failed");
     }
-  }
+  };
 
   return (
     <View>
@@ -31,6 +31,5 @@ export default function Login() {
       />
       <Button title="Login" onPress={handleLogin} />
     </View>
-  )
+  );
 }
-
