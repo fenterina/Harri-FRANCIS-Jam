@@ -1,24 +1,23 @@
 import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
 import { useState } from "react";
 
-export default function ForgotPasswordScreen({ navigation }) {
+export default function CodeScreen({ navigation }) {
   const [email, setEmail] = useState("");
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reset Password</Text>
+      <Text style={styles.title}>Code Sent</Text>
       <TextInput
         style={styles.input}
         onChangeText={(input) => setEmail(input)}
         value={email}
-        placeholder="Enter your email"
         keyboardType="email-address"
       />
       <Pressable
         style={styles.button}
-        onPress={() => navigation.navigate("Code")}
+        onPress={() => navigation.navigate("Login")}
       >
-        <Text style={styles.buttonText}>Send Reset Link</Text>
+        <Text style={styles.buttonText}>Submit Code</Text>
       </Pressable>
       <Pressable onPress={() => navigation.navigate("Login")}>
         <Text style={styles.link}>Back to Login</Text>
