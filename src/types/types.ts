@@ -13,7 +13,7 @@ export type TodoInsert = Database["public"]["Tables"]["To-do list"]["Insert"];
 export type TodoUpdate = Database["public"]["Tables"]["To-do list"]["Update"];
 
 export interface User {
-  user_id?: Int8Array;
+  user_id?: number;
   username: string;
   email: string;
   password: string | null;
@@ -21,8 +21,8 @@ export interface User {
 }
 
 export interface Todo {
-  todo_id?: Int8Array;
-  user_id: Int8Array;
+  todo_id?: number;
+  user_id: number;
   todo: string;
   status: boolean | null;
 }
