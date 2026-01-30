@@ -1,16 +1,3 @@
-<<<<<<< Updated upstream
-import React from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import Login from "./pages/Login";
-
-export default function App() {
-  return (
-    <SafeAreaView style={styles.container}>
-      <Login />
-      <StatusBar style="auto" />
-    </SafeAreaView>
-=======
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/LoginScreen";
@@ -30,7 +17,6 @@ export default function App() {
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       </Stack.Navigator>
     </NavigationContainer>
->>>>>>> Stashed changes
   );
 }
 

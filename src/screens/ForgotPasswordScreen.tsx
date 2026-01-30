@@ -1,64 +1,28 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import { supabase } from "../lib/supabase";
+import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
+import { useState } from "react";
 
-export default function ForgotPasswordScreen({ navigation }: any) {
+export default function ForgotPasswordScreen({ navigation }) {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleResetPassword = async () => {
-    if (!email) {
-      Alert.alert("Error", "Please enter your email");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
-      
-      if (error) throw error;
-      
-      Alert.alert(
-        "Success",
-        "Password reset email sent! Check your inbox.",
-        [{ text: "OK", onPress: () => navigation.navigate("Login") }]
-      );
-    } catch (error: any) {
-      Alert.alert("Error", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Reset Password</Text>
-      <Text style={styles.subtitle}>
-        Enter your email and we'll send you a link to reset your password
-      </Text>
-      
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        onChangeText={(input) => setEmail(input)}
         value={email}
-        onChangeText={setEmail}
+        placeholder="Enter your email"
         keyboardType="email-address"
-        autoCapitalize="none"
       />
-      
-      <TouchableOpacity
+      <Pressable
         style={styles.button}
-        onPress={handleResetPassword}
-        disabled={loading}
+        onPress={() => navigation.navigate("Login")}
       >
-        <Text style={styles.buttonText}>
-          {loading ? "Sending..." : "Send Reset Link"}
-        </Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.linkText}>Back to Login</Text>
-      </TouchableOpacity>
+        <Text style={styles.buttonText}>Send Reset Link</Text>
+      </Pressable>
+      <Pressable onPress={() => navigation.navigate("Login")}>
+        <Text style={styles.link}>Back to Login</Text>
+      </Pressable>
     </View>
   );
 }
@@ -66,45 +30,38 @@ export default function ForgotPasswordScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#d6d2c6",
+    alignItems: "center",
     justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#fff",
+    paddingHorizontal: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 30,
-    textAlign: "center",
+    marginBottom: 20,
   },
   input: {
+    width: "100%",
     borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 8,
-    fontSize: 16,
+    borderColor: "#0a0404",
+    padding: 10,
+    marginBottom: 10,
   },
   button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
+    backgroundColor: "#0a0404",
+    padding: 12,
     borderRadius: 8,
-    marginTop: 10,
+    marginTop: 20,
+    width: "100%",
+    alignItems: "center",
   },
   buttonText: {
     color: "#fff",
-    textAlign: "center",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
-  linkText: {
-    color: "#007AFF",
-    textAlign: "center",
+  link: {
+    color: "#0a0404",
     marginTop: 15,
     fontSize: 14,
   },

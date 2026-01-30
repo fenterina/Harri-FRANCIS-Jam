@@ -11,12 +11,15 @@ export const createAccount = async (user: User) => {
   if (error) throw error;
 };
 
-export const loginUser = async (user: Pick<User, 'username' | 'password'>) => {
+export const loginUser = async (
+  username: User["username"],
+  password: User["password"],
+) => {
   const { data, error } = await supabase
     .from("user_information")
     .select("*")
-    .eq("username", user.username)
-    .eq("password", user.password)
+    .eq("username", username)
+    .eq("password", password)
     .single();
 
   if (error || !data) throw new Error("Invalid login");
@@ -24,7 +27,7 @@ export const loginUser = async (user: Pick<User, 'username' | 'password'>) => {
   await supabase
     .from("user_information")
     .update({ status: true })
-    .eq("username", user.username);
+    .eq("username", username);
   return data;
 };
 

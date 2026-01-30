@@ -1,78 +1,51 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import { register } from "../services/authServices";
+import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
+import { useState } from "react";
 
-export default function RegisterScreen({ navigation }: any) {
+export default function RegisterScreen({ navigation }) {
+  const [uname, setUname] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleRegister = async () => {
-    if (!email || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords don't match");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await register(email, password);
-      Alert.alert("Success", "Account created successfully! Please login.");
-      navigation.navigate("Login");
-    } catch (error: any) {
-      Alert.alert("Registration Failed", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [pass, setPass] = useState("");
+  const [confirmPass, setConfirmPass] = useState("");
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Account</Text>
-      
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        onChangeText={(input) => setUname(input)}
+        value={uname}
+        placeholder="Username"
+      />
+      <TextInput
+        style={styles.input}
+        onChangeText={(input) => setEmail(input)}
         value={email}
-        onChangeText={setEmail}
+        placeholder="Email"
         keyboardType="email-address"
-        autoCapitalize="none"
       />
-      
       <TextInput
         style={styles.input}
+        onChangeText={(input) => setPass(input)}
+        value={pass}
         placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
         secureTextEntry
       />
-      
       <TextInput
         style={styles.input}
+        onChangeText={(input) => setConfirmPass(input)}
+        value={confirmPass}
         placeholder="Confirm Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
         secureTextEntry
       />
-      
-      <TouchableOpacity
+      <Pressable
         style={styles.button}
-        onPress={handleRegister}
-        disabled={loading}
+        onPress={() => navigation.navigate("Login")}
       >
-        <Text style={styles.buttonText}>
-          {loading ? "Creating Account..." : "Sign Up"}
-        </Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.linkText}>Already have an account? Login</Text>
-      </TouchableOpacity>
+        <Text style={styles.buttonText}>Register</Text>
+      </Pressable>
+      <Pressable onPress={() => navigation.navigate("Login")}>
+        <Text style={styles.loginLink}>Already have an account? Sign in</Text>
+      </Pressable>
     </View>
   );
 }
@@ -80,39 +53,38 @@ export default function RegisterScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#d6d2c6",
+    alignItems: "center",
     justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#fff",
+    paddingHorizontal: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 30,
-    textAlign: "center",
+    marginBottom: 20,
   },
   input: {
+    width: "100%",
     borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 8,
-    fontSize: 16,
+    borderColor: "#0a0404",
+    padding: 10,
+    marginBottom: 10,
   },
   button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
+    backgroundColor: "#0a0404",
+    padding: 12,
     borderRadius: 8,
-    marginTop: 10,
+    marginTop: 20,
+    width: "100%",
+    alignItems: "center",
   },
   buttonText: {
     color: "#fff",
-    textAlign: "center",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
-  linkText: {
-    color: "#007AFF",
-    textAlign: "center",
+  loginLink: {
+    color: "#0a0404",
     marginTop: 15,
     fontSize: 14,
   },
