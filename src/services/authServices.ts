@@ -2,13 +2,16 @@ import { User } from "../types/types";
 import { supabase } from "../lib/supabase";
 
 export const createAccount = async (user: User) => {
-  const { error } = await supabase.from("user_information").insert({
-    username: user.username,
-    email: user.email,
-    password: user.password,
-    status: false,
-  });
+  const { data, error } = await supabase
+    .from("user_information")
+    .insert({
+      username: user.username,
+      email: user.email,
+      password: user.password,
+    })
+    .select();
   if (error) throw error;
+  return data;
 };
 
 export const loginUser = async (
@@ -39,11 +42,11 @@ export const logoutUser = async (user: User) => {
 };
 
 export const getActiveUser = async () => {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("user_information")
     .select("*")
-    .eq("status", true)
-    .single();
+    .eq("status", true);
 
-  return data;
+  if (error) throw error;
+  return data && data.length > 0 ? data[0] : null;
 };
