@@ -27,7 +27,7 @@ export const updateTodo = async (todo: Todo, newTodo: string) => {
     .update({ todo: newTodo, status: todo.status })
     .eq("todo_id", todo.todo_id)
     .eq("user_id", todo.user_id);
-  
+
   if (error) {
     console.error("Error updating todo:", error);
     throw error;
