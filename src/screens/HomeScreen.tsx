@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
-import { use, useState } from "react";
+import { useEffect, useState } from "react";
+import { Todo } from "../types/types";
 import {
   StyleSheet,
   Text,
@@ -9,29 +10,58 @@ import {
   FlatList,
   Alert,
 } from "react-native";
+import {
+  addTodo,
+  getTodos,
+  updateTodo,
+  deleteTodo,
+} from "../services/todoServices";
 
-export default function todoScreen() {
-  const [tasks, settasks] = useState([]);
+export default function todoScreen({ route }: any) {
+  const [tasks, settasks] = useState<Todo[]>([]);
   const [text, settext] = useState("");
-  const [editingId, setEditingId] = useState(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
+  const userId = route?.params?.userId || 1;
 
-  function addTask() {
+  useEffect(() => {
+    loadTodos();
+  }, [userId]);
+
+  async function loadTodos() {
+    try {
+      console.log("Loading todos for userId:", userId);
+      const data = await getTodos(userId);
+      console.log("Loaded data:", data);
+      settasks(data || []);
+    } catch (error) {
+      console.error("Error loading todos:", error);
+      Alert.alert("Error", "Failed to load todos");
+    }
+  }
+
+  async function addTask() {
     if (text.trim() === "") {
       return;
     }
-
-    const newTask = {
-      id: Date.now().toString(),
-      text: text,
-      completed: false,
-    };
-    settasks([...tasks, newTask]);
-    settext("");
+    try {
+      console.log("Adding todo with user_id:", userId, "todo:", text);
+      await addTodo({
+        user_id: userId,
+        todo: text,
+        status: false,
+      } as any);
+      console.log("Todo added successfully");
+      settext("");
+      loadTodos();
+    } catch (error) {
+      console.error("Error adding task:", error);
+      Alert.alert("error", "Failed to add task");
+    }
   }
 
-  function renderTask({ item }) {
-    if (editingId === item.id) {
+  function renderTask({ item }: { item: Todo }) {
+    if (editingId === item.todo_id) {
       return (
         <View style={styles.taskItem}>
           <TextInput
@@ -39,7 +69,7 @@ export default function todoScreen() {
             onChangeText={setEditingText}
             style={styles.editInput}
           />
-          <Pressable style={styles.saveBtn} onPress={() => saveEdit(item.id)}>
+          <Pressable style={styles.saveBtn} onPress={() => saveEdit(item)}>
             <Text style={styles.btnText}>Save</Text>
           </Pressable>
           <Pressable style={styles.cancelBtn} onPress={cancelEdit}>
@@ -50,55 +80,63 @@ export default function todoScreen() {
     }
     return (
       <View style={styles.taskItem}>
-        <Pressable onPress={() => toggleTask(item.id)}>
-          <Text style={styles.checkbox}>{item.completed ? "✓" : "☐"}</Text>
+        <Pressable onPress={() => toggleTask(item)}>
+          <Text style={styles.checkbox}>{item.status ? "✓" : "☐"}</Text>
         </Pressable>
-        <Text style={[styles.taskText, item.completed && styles.completedText]}>
-          {item.text}
+        <Text style={[styles.taskText, item.status && styles.completedText]}>
+          {item.todo}
         </Text>
         <Pressable
           style={styles.editBtn}
-          onPress={() => startEdit(item.id, item.text)}
+          onPress={() => startEdit(item.todo_id!, item.todo)}
         >
           <Text style={styles.btnText}>Edit</Text>
         </Pressable>
-        <Pressable style={styles.deleteBtn} onPress={() => deleteTask(item.id)}>
+        <Pressable style={styles.deleteBtn} onPress={() => deleteTask(item)}>
           <Text style={styles.btnText}>Delete</Text>
         </Pressable>
       </View>
     );
   }
 
-  function toggleTask(id) {
-    settasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task,
-      ),
-    );
+  async function toggleTask(item: Todo) {
+    try {
+      const updatedItem = { ...item, status: !item.status };
+      await updateTodo(updatedItem, item.todo);
+      loadTodos();
+    } catch (error) {
+      Alert.alert("Error", "failed to toggle task");
+    }
   }
-  function startEdit(id, currentText) {
+  function startEdit(id: number, currentText: string) {
     setEditingId(id);
     setEditingText(currentText);
   }
-  function saveEdit(id) {
+  async function saveEdit(item: Todo) {
     if (editingText.trim() === "") {
       Alert.alert("Empty Task", "Please enter a task before saving");
       return;
     }
-    settasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, text: editingText } : task,
-      ),
-    );
-    setEditingId(null);
-    setEditingText("");
+    try {
+      await updateTodo(item, editingText);
+      setEditingId(null);
+      setEditingText("");
+      loadTodos();
+    } catch (error) {
+      Alert.alert("Error", "Failed to update task");
+    }
   }
   function cancelEdit() {
     setEditingId(null);
     setEditingText("");
   }
-  function deleteTask(id) {
-    settasks(tasks.filter((task) => task.id !== id));
+  async function deleteTask(item: Todo) {
+    try {
+      await deleteTodo(item);
+      loadTodos();
+    } catch (error) {
+      Alert.alert("Error", "Failed to delete task");
+    }
   }
 
   return (
@@ -120,7 +158,7 @@ export default function todoScreen() {
       <FlatList
         data={tasks}
         renderItem={renderTask}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.todo_id?.toString() || ""}
         style={styles.listContainer}
       />
 
