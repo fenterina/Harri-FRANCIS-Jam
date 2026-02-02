@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,24 +10,24 @@ import {
   Alert,
 } from "react-native";
 
-export default function todoScreen() {
+export default function todoScreen({ route, navigation }) {
   const [tasks, settasks] = useState([]);
   const [text, settext] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
+  const [user, setUser] = useState(null);
+
+  const { userId } = route.params;
+
+  useEffect(() => {
+    //TODO: Fetch user data based on userId
+    const fetchUser = async () => {};
+
+    fetchUser();
+  }, []);
 
   function addTask() {
-    if (text.trim() === "") {
-      return;
-    }
-
-    const newTask = {
-      id: Date.now().toString(),
-      text: text,
-      completed: false,
-    };
-    settasks([...tasks, newTask]);
-    settext("");
+    //TODO: Add new task to the list
   }
 
   function renderTask({ item }) {
