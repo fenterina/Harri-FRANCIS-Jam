@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
 import { User } from "../types/types";
 import { useState } from "react";
+import { register } from "../services/authServices";
 
 export default function RegisterScreen({ navigation }) {
   const [uname, setUname] = useState("");
@@ -21,7 +22,16 @@ export default function RegisterScreen({ navigation }) {
       isLoggedIn: false,
     };
     try {
-      //TODO: Implement registration logic
+      const { data, error } = await register(user);
+      if (error) {
+        alert(error.message || "Failed to create account. Please try again.");
+      } else if (data) {
+        alert("Account created successfully! Please log in.");
+        navigation.navigate('Login');
+      } else {
+        alert("Registration completed. Please log in.");
+        navigation.navigate('Login');
+      }
     } catch (error) {
       console.error("Registration error:", error);
       alert("Failed to create account. Please try again.");

@@ -1,7 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
-import { Database } from "../database.types";
 
-export const supabase = createClient(
-  "https://fiiifnqafceyyciqjqof.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpaWlmbnFhZmNleXljaXFqcW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MjgyODcsImV4cCI6MjA4NTEwNDI4N30.I1Dz9DesSc08GuJwDe8NFU_gN6g71mgyrHW2CHOpwBQ",
-);
+
+// Resolve Supabase config from environment or Expo manifest extras.
+const SUPABASE_URL =
+	process.env.SUPABASE_URL;
+
+const SUPABASE_ANON_KEY =
+	process.env.SUPABASE_ANON_KEY;
+
+export const supabase = createClient("https://ncknvmckphqlernbzfpm.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ja252bWNrcGhxbGVybmJ6ZnBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwNTc4NjAsImV4cCI6MjA4NTYzMzg2MH0.I4JCaYMnTQ6YWFqxpY47WEN33GeLJA28MgcFcdgdhW8");

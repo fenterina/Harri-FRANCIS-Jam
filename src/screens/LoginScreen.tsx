@@ -1,12 +1,21 @@
 import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
-import { use, useState } from "react";
+import { useState } from "react";
+import { login } from "../services/authServices";
+import { User } from "../types/types";
 
 export default function LoginScreen({ navigation }) {
   const [uname, setUname] = useState("");
   const [pass, setPass] = useState("");
   async function handleLogin() {
     try {
-      //TODO: Implement login logic
+
+      const {data, error} = await login(uname, pass);
+      console.log("Login response:", {data, error});
+      if(data) {
+      navigation.navigate('Home', { userId: data.user_id });
+      } else {
+        alert("Login failed. Please check your credentials and try again.");
+      }
     } catch (error) {
       console.error("Login failed:", error);
     }
