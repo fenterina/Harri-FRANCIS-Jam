@@ -6,6 +6,8 @@ import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
+import ProfileScreen from "./screens/ProfileScreen"; // New Profile Screen for avatar management
+import Spinner from "react-native-loading-spinner-overlay";
 
 import CodeLinkScreen from "./screens/CodeScreen";
 import CodeScreen from "./screens/CodeScreen";
@@ -20,6 +22,8 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        {/* Profile Screen - User profile with avatar management */}
+        <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
 
         <Stack.Screen name="Code" component={CodeScreen} />

@@ -1,5 +1,6 @@
 import { Database } from "../database.types";
 
+
 export interface User {
   user_id?: number;
   username: string;
