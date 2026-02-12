@@ -200,6 +200,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
+import { uriToPath } from '../utils/image-to-path';
 
 // Custom hook for managing user avatars in Supabase Storage
 // NOTE: userId must be the Supabase auth user id (UUID string)
@@ -210,7 +211,7 @@ export function useAvatar(userId: string) {
   const BUCKET_NAME = 'avatars';
 
   // Use folder structure: "<user-uuid>/<user-uuid>.jpg"
-  const getAvatarPath = () => `${userId}/${userId}.jpg`;
+  const getAvatarPath = () => `${userId}.jpg`;
 
   /**
    * Fetch avatar URL from Supabase Storage
@@ -254,15 +255,15 @@ export function useAvatar(userId: string) {
         if (publicUrl) {
           const urlWithTimestamp = `${publicUrl}?t=${new Date().getTime()}`; // cache-busting
           setAvatarUrl(urlWithTimestamp);
-          console.log(`Files in folderfaifa ${userId}:`, files?.map((f) => f.name));
-          console.log(`Avatarwfasfiasn ${userId}.jpg exists in folder:`, avatarExists);
+          console.log(`Files in folder ${userId}:`, files?.map((f) => f.name));
+          console.log(`Avatar ${userId}.jpg exists in folder:`, avatarExists);
         } else {
           setAvatarUrl(null);
           console.log('fetchingg');
         }
       } else {
         setAvatarUrl(null);
-        console.log('gfq8afwohgfdo HAHAHAHAH');
+        console.log('Avatar error display');
       }
     } catch (err) {
       console.error('Fetch avatar error:', err);
@@ -360,13 +361,13 @@ export function useAvatar(userId: string) {
     }
   };
 
-  const updateAvatar = async (source: 'camera' | 'gallery') => {
-    try {
-      setLoading(true);
-      console.log ('===Entering the edit state===');
-      
-    }
-  }
+  // const updateAvatar = async (source: 'camera' | 'gallery') => {
+  //   try {
+  //     setLoading(true);
+  //     console.log ('===Entering the edit state===');
+
+  //   }
+  // }
 
   const deleteAvatar = async () => {
     try {
@@ -400,32 +401,11 @@ export function useAvatar(userId: string) {
     try {
       const { manipulateAsync, SaveFormat } = await import('expo-image-manipulator');
 
-      const manipulatedImage = await manipulateAsync(
-        uri,
-        [{ resize: { width: 500 } }],
-        {
-          compress: 0.7,
-          format: SaveFormat.JPEG,
-          base64: true,
-        }
-      );
-
-      if (!manipulatedImage.base64) {
-        console.error('No base64 produced from manipulator');
-        return false;
-      }
-
-      // Convert base64 to Uint8Array (supabase-js accepts this)
-      const base64 = manipulatedImage.base64;
-      const byteString = atob(base64);
-      const arrayBuffer = new Uint8Array(byteString.length);
-      for (let i = 0; i < byteString.length; i++) {
-        arrayBuffer[i] = byteString.charCodeAt(i);
-      }
+      const imagePath = await uriToPath(uri)
 
       const avatarPath = getAvatarPath();
 
-      const { error } = await supabase.storage.from(BUCKET_NAME).upload(avatarPath, arrayBuffer, {
+      const { error } = await supabase.storage.from(BUCKET_NAME).upload(avatarPath, imagePath, {
         contentType: 'image/jpeg',
         upsert: true,
       });

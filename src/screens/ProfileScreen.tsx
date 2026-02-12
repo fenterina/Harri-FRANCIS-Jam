@@ -30,6 +30,7 @@ import { logout } from '../services/authServices';
 import { supabase } from '../lib/supabase';
 import { User } from '../types/types';
 import * as ImagePicker from 'expo-image-picker';
+import { uriToPath } from '../utils/image-to-path';
 
 //to match with useAvatar.ts
 const BUCKET_NAME = 'avatars';
@@ -189,41 +190,17 @@ const handleSaveAvatar = async () => {
     console.log('=== SAVE AVATAR START ===');
     console.log('Selected image URI:', selectedImageUri);
 
-    // Import image manipulator
-    const { manipulateAsync, SaveFormat } = await import('expo-image-manipulator');
-
-    
-    
-    //////
-
-
-
-    
-    // Compress image
-    console.log('Compressing image...');
-    const manipulatedImage = await manipulateAsync(
-      selectedImageUri,
-      [{ resize: { width: 500 } }],
-      { compress: 0.7, format: SaveFormat.JPEG }
-    );
-    console.log('Compressed image URI:', manipulatedImage.uri);
-
-    // Convert to blob
-    console.log('Converting to blob...');
-    const response = await fetch(manipulatedImage.uri);
-    const blob = await response.blob();
-    console.log('Blob size:', blob.size, 'bytes');
-    console.log('Blob type:', blob.type);
+    const imagePath = await uriToPath(selectedImageUri);
 
     // ✅ Use folder structure path
-    const avatarPath = `${userId}/${userId}.jpg`;
+    const avatarPath = `${userId}.jpg`;
     console.log('Upload path:', avatarPath);
 
     // ✅ Correct contentType with slash
     console.log('Uploading to Supabase Storage...');
  const { data, error: uploadError } = await supabase.storage
   .from(BUCKET_NAME)
-  .upload(avatarPath, blob, {
+  .upload(avatarPath, imagePath, {
     contentType: 'image/jpeg', //slash 
     upsert: true,
   });

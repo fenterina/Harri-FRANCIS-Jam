@@ -1,4 +1,4 @@
-/** the avatar display icon??
+/** the avatar display icon
  * 
  */
 
