@@ -360,6 +360,14 @@ export function useAvatar(userId: string) {
     }
   };
 
+  const updateAvatar = async (source: 'camera' | 'gallery') => {
+    try {
+      setLoading(true);
+      console.log ('===Entering the edit state===');
+      
+    }
+  }
+
   const deleteAvatar = async () => {
     try {
       setLoading(true);

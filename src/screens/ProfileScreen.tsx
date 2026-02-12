@@ -1,5 +1,14 @@
 /**
- * Function for the UI Profile Screen and functions 
+ * Function for the UI Profile Screen
+ * To manage the frontend for this Profile Screen
+ *  
+ * 
+ * 
+ * 
+ * editing Avatar - need ug own function sa useAvatar (although nigana siya last, mabot lang ngano wala napud nigana inutil)
+ * editing state - profile screen na UI/UX
+ * editing function - backend, utilize useAvatar and portion sa frontend to call sa URL? hmmm....
+ * 
  */
 
 import React, { useState, useEffect } from 'react';
@@ -34,12 +43,12 @@ export default function ProfileScreen({ route, navigation }: any) {
 
   // User info states
   const [user, setUser] = useState<User | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // editing state sa mga placeholders for both static and editing mode
   const [editedUsername, setEditedUsername] = useState('');
   const [editedEmail, setEditedEmail] = useState('');
 
   // Avatar editing states
-  const [isEditingAvatar, setIsEditingAvatar] = useState(false);
+  const [isEditingAvatar, setIsEditingAvatar] = useState(false); // editing state para sa Avatar display only
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -183,6 +192,13 @@ const handleSaveAvatar = async () => {
     // Import image manipulator
     const { manipulateAsync, SaveFormat } = await import('expo-image-manipulator');
 
+    
+    
+    //////
+
+
+
+    
     // Compress image
     console.log('Compressing image...');
     const manipulatedImage = await manipulateAsync(
@@ -205,12 +221,12 @@ const handleSaveAvatar = async () => {
 
     // ✅ Correct contentType with slash
     console.log('Uploading to Supabase Storage...');
-    const { data, error: uploadError } = await supabase.storage
-      .from(BUCKET_NAME)
-      .upload(avatarPath, blob, {
-        contentType: 'image/jpeg',  // ✅ Changed from 'image.jpg' to 'image/jpeg'
-        upsert: true,
-      });
+ const { data, error: uploadError } = await supabase.storage
+  .from(BUCKET_NAME)
+  .upload(avatarPath, blob, {
+    contentType: 'image/jpeg', //slash 
+    upsert: true,
+  });
 
     if (uploadError) {
       console.error('❌ Upload error:', uploadError);
@@ -265,7 +281,7 @@ const arrayBuffer = new Uint8Array(byteString.length);
 for (let i = 0; i < byteString.length; i++) {
   arrayBuffer[i] = byteString.charCodeAt(i);
 }
-const avatarPath = `${userId}.jpeg`;
+const avatarPath = `${userId}/${userId}.jpeg`;
 
 const { error } = await supabase.storage
   .from('avatars')
