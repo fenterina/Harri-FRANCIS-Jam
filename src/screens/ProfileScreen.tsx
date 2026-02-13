@@ -1,13 +1,6 @@
 /**
  * Function for the UI Profile Screen
  * To manage the frontend for this Profile Screen
- *  
- * 
- * 
- * 
- * editing Avatar - need ug own function sa useAvatar (although nigana siya last, mabot lang ngano wala napud nigana inutil)
- * editing state - profile screen na UI/UX
- * editing function - backend, utilize useAvatar and portion sa frontend to call sa URL? hmmm....
  * 
  */
 
@@ -32,26 +25,25 @@ import { User } from '../types/types';
 import * as ImagePicker from 'expo-image-picker';
 import { uriToPath } from '../utils/image-to-path';
 
-//to match with useAvatar.ts
+
 const BUCKET_NAME = 'avatars';
 
 export default function ProfileScreen({ route, navigation }: any) {
-  // Get userId from navigation params
-  const { userId } = route.params as {userId: string};
+  const { userId } =  route.params as {userId: string};
 
   // Avatar hook for CRUD operations
   const { avatarUrl, loading: avatarLoading, uploadAvatar, deleteAvatar, refreshAvatar } = useAvatar(userId);
 
   // User info states
   const [user, setUser] = useState<User | null>(null);
-  const [isEditing, setIsEditing] = useState(false); // editing state sa mga placeholders for both static and editing mode
+  const [isEditing, setIsEditing] = useState(false); \ 
   const [editedUsername, setEditedUsername] = useState('');
   const [editedEmail, setEditedEmail] = useState('');
 
   // Avatar editing states
-  const [isEditingAvatar, setIsEditingAvatar] = useState(false); // editing state para sa Avatar display only
+  const [isEditingAvatar, setIsEditingAvatar] = useState(false); 
   const [previewUri, setPreviewUri] = useState<string | null>(null);
-  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
+  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null); //
   const [uploading, setUploading] = useState(false);
 
   /**
@@ -98,7 +90,9 @@ export default function ProfileScreen({ route, navigation }: any) {
       }
 
       if (!permissionResult.granted) {
-        Alert.alert('Permission Required', 'Permission to access ' + (source === 'camera' ? 'camera' : 'gallery') + ' is required');
+        Alert.alert(
+          'Permission Required', 
+          'Permission to access ' + (source === 'camera' ? 'camera' : 'gallery') + ' is required');
         return;
       }
 
@@ -176,7 +170,7 @@ export default function ProfileScreen({ route, navigation }: any) {
     }
   };
 
-  /**
+/**
  * Save the selected avatar to Supabase Storage
  */
 const handleSaveAvatar = async () => {
@@ -187,27 +181,17 @@ const handleSaveAvatar = async () => {
 
   try {
     setUploading(true);
-    console.log('=== SAVE AVATAR START ===');
-    console.log('Selected image URI:', selectedImageUri);
-
-    const imagePath = await uriToPath(selectedImageUri);
-
-    // ✅ Use folder structure path
+    const imagePath = await uriToPath(selectedImageUri)
     const avatarPath = `${userId}.jpg`;
-    console.log('Upload path:', avatarPath);
-
-    // ✅ Correct contentType with slash
-    console.log('Uploading to Supabase Storage...');
- const { data, error: uploadError } = await supabase.storage
-  .from(BUCKET_NAME)
-  .upload(avatarPath, imagePath, {
-    contentType: 'image/jpeg', //slash 
-    upsert: true,
-  });
+    const { data, error: uploadError } = await supabase.storage
+      .from(BUCKET_NAME)
+      .upload(avatarPath, imagePath, {
+        contentType: 'image/jpeg',  
+        upsert: true,
+      });
 
     if (uploadError) {
       console.error('❌ Upload error:', uploadError);
-      console.error('Error details (profile):', JSON.stringify(uploadError, null, 2));
       Alert.alert('Upload Failed', uploadError.message || 'Failed to upload avatar');
       return;
     }
@@ -220,64 +204,16 @@ const handleSaveAvatar = async () => {
     setPreviewUri(null);
     setSelectedImageUri(null);
 
-    // // Refresh avatar URL
     await refreshAvatar();
 
-    console.log('=== SAVE AVATAR END ===');
     Alert.alert('Success', 'Avatar updated successfully!');
   } catch (err:any) {
     console.error('❌ Save avatar error:', err);
-    Alert.alert('Error', 'Failed to save avatar: ' + (err?.message ?? String(err)));
+    Alert.alert('Error', ' avatar: ' + (err?.message ?? String(err)));
   } finally {
     setUploading(false);
   }
 };
-
-  /**
-   * Upload avatar from a selected URI (bypassing the picker in useAvatar)
-   */
-  const uploadAvatarFromUri = async (uri: string): Promise<boolean> => {
-    try {
-      // Compress the selected image (reuse logic from useAvatar)
-      const { manipulateAsync, SaveFormat } = await import('expo-image-manipulator');
-      
-      const manipulatedImage = await manipulateAsync(
-  uri,
-  [{ resize: { width: 500 } }],
-  {
-    compress: 0.7,
-    format: SaveFormat.JPEG,
-    base64: true, 
-  }
-);
-console.log("Uploading...")
-const base64 = manipulatedImage.base64!;
-const byteString = atob(base64);
-const arrayBuffer = new Uint8Array(byteString.length);
-
-for (let i = 0; i < byteString.length; i++) {
-  arrayBuffer[i] = byteString.charCodeAt(i);
-}
-const avatarPath = `${userId}/${userId}.jpeg`;
-
-const { error } = await supabase.storage
-  .from('avatars')
-  .upload(avatarPath, arrayBuffer, {
-    contentType: 'image/jpeg',
-    upsert: true,
-  });
-
-      if (error) {
-        Alert.alert(`Upload error: ${error.message}`);
-        return false;
-      }
-
-      return true;
-    } catch (err) {
-      console.error('Upload from URI error:', err);
-      return false;
-    }
-  };
 
   /**
    * Cancel avatar editing and discard preview
@@ -302,20 +238,15 @@ const { error } = await supabase.storage
           style: 'destructive',
           onPress: async () => {
             try {
-              console.log('=== REMOVE AVATAR START ===');
               console.log('Removing avatar for user:', userId);
-
-              // ✅ Use deleteAvatar from useAvatar hook (this actually deletes from Supabase)
               const success = await deleteAvatar();
 
               if (success) {
-                console.log('✅ Avatar removed successfully');
                 Alert.alert('Success', 'Avatar removed successfully!');
               } else {
                 console.log('❌ Failed to remove avatar');
               }
 
-              console.log('=== REMOVE AVATAR END ===');
             } catch (err) {
               console.error('❌ Remove avatar error:', err);
               Alert.alert('Error', 'Failed to remove avatar');
@@ -325,7 +256,6 @@ const { error } = await supabase.storage
       ]
     );
   };
-
 
   /**
    * Save edited user information to database
@@ -374,7 +304,7 @@ const { error } = await supabase.storage
     setEditedUsername(user?.username || '');
     setEditedEmail(user?.email || '');
     setIsEditing(false);
-  }; //look for button ani (cancelButton na)
+  };
 
   /**
    * Handle user logout
